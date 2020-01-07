@@ -1,0 +1,490 @@
+import java.util.ArrayList;
+
+public class Piece
+{
+	Color color;
+	Type type;
+	int row;
+	int col;
+	
+	boolean[][] reachable;
+	boolean hasMoved;
+	
+	public Piece(Type t, int r, int c)
+	{
+		color = Color.White;
+		type = t;
+		row = r;
+		col = c;
+		
+		reachable = new boolean[8][8];
+		hasMoved = false;
+	}
+	
+	public void setColor(Color c)
+	{
+		color = c;
+	}
+	
+	public void setRow(int r)
+	{
+		row = r;
+	}
+	public void setColumn(int c)
+	{
+		col = c;
+	}
+	public void startMoving()
+	{
+		hasMoved = true;
+	}
+	
+	public Color getColor()
+	{
+		return color;
+	}
+	
+	public int getRow()
+	{
+		return row;
+	}
+	public int getColumn()
+	{
+		return col;
+	}
+	public Type getType()
+	{
+		return type;
+	}
+	
+	public boolean isValidMove(int r, int c) throws IndexOutOfBoundsException
+	{
+		return reachable[r][c];
+	}
+	
+	public void checkMoves(Piece[][] board, ArrayList<Piece> black, ArrayList<Piece> white) throws IndexOutOfBoundsException
+	{
+		for (int r = 0; r < 8; r++)
+		{
+			for (int c = 0; c < 8; c++)
+			{
+				reachable[r][c] = false;
+			}
+		}
+		
+		switch (type)
+		{
+			case King:
+			{
+				if (row + 1 < 8 && (board[row + 1][col] == null
+					||	(board[row + 1][col] != null && board[row + 1][col].getColor() != this.color)))
+					reachable[row + 1][col] = true;
+					
+				if (row - 1 >= 0 && (board[row - 1][col] == null
+					||	(board[row - 1][col] != null && board[row - 1][col].getColor() != this.color)))
+					reachable[row - 1][col] = true;
+					
+				if (col + 1 < 8 && (board[row][col + 1] == null
+					||	(board[row][col + 1] != null && board[row][col + 1].getColor() != this.color)))
+					reachable[row][col + 1] = true;
+					
+				if (col - 1 >= 0 && (board[row][col - 1] == null
+					||	(board[row][col - 1] != null && board[row][col - 1].getColor() != this.color)))
+					reachable[row][col - 1] = true;
+					
+				if (row + 1 < 8 && col + 1 < 8 && (board[row + 1][col + 1] == null
+					||	(board[row + 1][col + 1] != null && board[row + 1][col + 1].getColor() != this.color)))
+					reachable[row + 1][col + 1] = true;
+					
+				if (row + 1 < 8 && col - 1 >= 0 && (board[row + 1][col - 1] == null
+					||	(board[row + 1][col - 1] != null && board[row + 1][col - 1].getColor() != this.color)))
+					reachable[row + 1][col - 1] = true;
+					
+				if (row - 1 >= 0 && col + 1 < 8 && (board[row - 1][col + 1] == null
+					||	(board[row - 1][col + 1] != null && board[row - 1][col + 1].getColor() != this.color)))
+					reachable[row - 1][col + 1] = true;
+					
+				if (row - 1 >= 0 && col - 1 >= 0 && (board[row - 1][col - 1] == null
+					||	(board[row - 1][col - 1] != null && board[row - 1][col - 1].getColor() != this.color)))
+					reachable[row - 1][col - 1] = true;
+					
+				break;
+			}
+			case Queen:
+			{	
+				for (int row_check = row - 1; row_check >= 0; row_check--)
+				{
+					if (board[row_check][col] == null)
+						reachable[row_check][col] = true;
+					
+					else
+					{
+						if (board[row_check][col].getColor() != this.color)
+							reachable[row_check][col] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row + 1; row_check < 8; row_check++)
+				{
+					if (board[row_check][col] == null)
+						reachable[row_check][col] = true;
+					
+					else
+					{
+						if (board[row_check][col].getColor() != this.color)
+							reachable[row_check][col] = true;
+						
+						break;
+					}
+				}
+				
+				for (int col_check = col - 1; col_check >= 0; col_check--)
+				{
+					if (board[row][col_check] == null)
+						reachable[row][col_check] = true;
+					
+					else
+					{
+						if (board[row][col_check].getColor() != this.color)
+							reachable[row][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int col_check = col + 1; col_check < 8; col_check++)
+				{
+					if (board[row][col_check] == null)
+						reachable[row][col_check] = true;
+					
+					else
+					{
+						if (board[row][col_check].getColor() != this.color)
+							reachable[row][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row - 1, col_check = col - 1; row_check >= 0 && col_check >= 0; row_check--, col_check--)
+				{
+					if (board[row_check][col_check] == null)
+						reachable[row_check][col_check] = true;
+					
+					else
+					{
+						if (board[row_check][col_check].getColor() != this.color)
+							reachable[row_check][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row + 1, col_check = col - 1; row_check < 8 && col_check >= 0; row_check++, col_check--)
+				{
+					if (board[row_check][col_check] == null)
+						reachable[row_check][col_check] = true;
+					
+					else
+					{
+						if (board[row_check][col_check].getColor() != this.color)
+							reachable[row_check][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row - 1, col_check = col + 1; row_check >= 0 && col_check < 8; row_check--, col_check++)
+				{
+					if (board[row_check][col_check] == null)
+						reachable[row_check][col_check] = true;
+					
+					else
+					{
+						if (board[row_check][col_check].getColor() != this.color)
+							reachable[row_check][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row + 1, col_check = col + 1; row_check < 8 && col_check < 8; row_check++, col_check++)
+				{
+					if (board[row_check][col_check] == null)
+						reachable[row_check][col_check] = true;
+					
+					else
+					{
+						if (board[row_check][col_check].getColor() != this.color)
+							reachable[row_check][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				break;
+			}
+			case Rook:
+			{
+				for (int row_check = row - 1; row_check >= 0; row_check--)
+				{
+					if (board[row_check][col] == null)
+						reachable[row_check][col] = true;
+					
+					else
+					{
+						if (board[row_check][col].getColor() != this.color)
+							reachable[row_check][col] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row + 1; row_check < 8; row_check++)
+				{
+					if (board[row_check][col] == null)
+						reachable[row_check][col] = true;
+					
+					else
+					{
+						if (board[row_check][col].getColor() != this.color)
+							reachable[row_check][col] = true;
+						
+						break;
+					}
+				}
+				
+				for (int col_check = col - 1; col_check >= 0; col_check--)
+				{
+					if (board[row][col_check] == null)
+						reachable[row][col_check] = true;
+					
+					else
+					{
+						if (board[row][col_check].getColor() != this.color)
+							reachable[row][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int col_check = col + 1; col_check < 8; col_check++)
+				{
+					if (board[row][col_check] == null)
+						reachable[row][col_check] = true;
+					
+					else
+					{
+						if (board[row][col_check].getColor() != this.color)
+							reachable[row][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				break;
+			}
+			case Bishop:
+			{
+				for (int row_check = row - 1, col_check = col - 1; row_check >= 0 && col_check >= 0; row_check--, col_check--)
+				{
+					if (board[row_check][col_check] == null)
+						reachable[row_check][col_check] = true;
+					
+					else
+					{
+						if (board[row_check][col_check].getColor() != this.color)
+							reachable[row_check][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row + 1, col_check = col - 1; row_check < 8 && col_check >= 0; row_check++, col_check--)
+				{
+					if (board[row_check][col_check] == null)
+						reachable[row_check][col_check] = true;
+					
+					else
+					{
+						if (board[row_check][col_check].getColor() != this.color)
+							reachable[row_check][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row - 1, col_check = col + 1; row_check >= 0 && col_check < 8; row_check--, col_check++)
+				{
+					if (board[row_check][col_check] == null)
+						reachable[row_check][col_check] = true;
+					
+					else
+					{
+						if (board[row_check][col_check].getColor() != this.color)
+							reachable[row_check][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				for (int row_check = row + 1, col_check = col + 1; row_check < 8 && col_check < 8; row_check++, col_check++)
+				{
+					if (board[row_check][col_check] == null)
+						reachable[row_check][col_check] = true;
+					
+					else
+					{
+						if (board[row_check][col_check].getColor() != this.color)
+							reachable[row_check][col_check] = true;
+						
+						break;
+					}
+				}
+				
+				break;
+			}
+			case Knight:
+			{
+				if (row + 2 < 8 && col + 1 < 8 && (board[row + 2][col + 1] == null
+					||	(board[row + 2][col + 1] != null && board[row + 2][col + 1].getColor() != this.color)))
+					reachable[row + 2][col + 1] = true;
+						
+				if (row + 2 < 8 && col - 1 >= 0 && (board[row + 2][col - 1] == null
+					||	(board[row + 2][col - 1] != null && board[row + 2][col - 1].getColor() != this.color)))
+					reachable[row + 2][col - 1] = true;
+						
+				if (row - 2 >= 0 && col + 1 < 8 && (board[row - 2][col + 1] == null
+					||	(board[row - 2][col + 1] != null && board[row - 2][col + 1].getColor() != this.color)))
+					reachable[row - 2][col + 1] = true;
+						
+				if (row - 1 >= 0 && col - 1 >= 0 && (board[row - 1][col - 1] == null
+					||	(board[row - 1][col - 1] != null && board[row - 1][col - 1].getColor() != this.color)))
+					reachable[row - 2][col - 1] = true;
+					
+				if (row + 1 < 8 && col + 2 < 8 && (board[row + 1][col + 2] == null
+					||	(board[row + 1][col + 2] != null && board[row + 1][col + 2].getColor() != this.color)))
+					reachable[row + 1][col + 2] = true;
+					
+				if (row + 1 < 8 && col - 2 >= 0 && (board[row + 1][col - 2] == null
+					||	(board[row + 1][col - 2] != null && board[row + 1][col - 2].getColor() != this.color)))
+					reachable[row + 1][col - 2] = true;
+					
+				if (row - 1 >= 0 && col + 2 < 8 && (board[row - 1][col + 2] == null
+					||	(board[row - 1][col + 2] != null && board[row - 1][col + 2].getColor() != this.color)))
+					reachable[row - 1][col + 2] = true;
+					
+				if (row - 1 >= 0 && col - 2 >= 0 && (board[row - 1][col - 2] == null
+					||	(board[row - 1][col - 2] != null && board[row - 1][col - 2].getColor() != this.color)))
+					reachable[row - 1][col - 2] = true;
+					
+				break;
+			}
+			case Pawn:
+			{
+				switch (color)
+				{
+					case White:
+					{
+						if (row - 2 >= 0
+							&&	!hasMoved && board[row - 2][col] == null)
+							reachable[row - 2][col] = true;
+							
+						if (row - 1 >= 0
+							&&	board[row - 1][col] == null)
+							reachable[row - 1][col] = true;
+								
+						if (row - 1 >= 0 && col - 1 >= 0
+							&&	board[row - 1][col - 1] != null && board[row - 1][col - 1].getColor() != this.color)
+							reachable[row - 1][col - 1] = true;
+								
+						if (row - 1 >= 0 && col + 1 < 8
+							&&	board[row - 1][col + 1] != null && board[row - 1][col + 1].getColor() != this.color)
+							reachable[row - 1][col + 1] = true;
+								
+						break;
+					}
+					case Black:
+					{
+						if (row + 2 < 8
+							&&	!hasMoved && board[row + 2][col] == null)
+							reachable[row + 2][col] = true;
+							
+						if (row + 1 < 8
+							&&	board[row + 1][col] == null)
+							reachable[row + 1][col] = true;
+								
+						if (row + 1 < 8 && col - 1 >= 0
+							&&	board[row + 1][col - 1] != null && board[row + 1][col - 1].getColor() != this.color)
+							reachable[row + 1][col - 1] = true;
+								
+						if (row + 1 < 8 && col + 1 < 8
+							&&	board[row + 1][col + 1] != null && board[row + 1][col + 1].getColor() != this.color)
+							reachable[row + 1][col + 1] = true;
+								
+						break;
+					}
+				}
+				
+				break;
+			}
+		}
+	}
+	
+	public String icon()
+	{
+		String txtColor;
+		switch (color)
+		{
+			case White:
+			{
+				txtColor = "*";
+				break;
+			}
+			case Black:
+			{
+				txtColor = "^";
+				break;
+			}
+			default:
+			{
+				txtColor = "";
+				break;
+			}
+		}
+		
+		switch (type)
+		{
+			case King:
+			{
+				return txtColor + "K";
+			}
+			case Queen:
+			{
+				return txtColor + "Q";
+			}
+			case Rook:
+			{
+				return txtColor + "R";
+			}
+			case Bishop:
+			{
+				return txtColor + "B";
+			}
+			case Knight:
+			{
+				return txtColor + "N";
+			}
+			case Pawn:
+			{
+				return txtColor + "P";
+			}
+			default:
+			{
+				return " ";
+			}
+		}
+	}
+}
