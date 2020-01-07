@@ -1,0 +1,353 @@
+import java.util.*;
+
+public class Game
+{	
+	public static Scanner sc = new Scanner(System.in);
+	
+	public static Piece[][] board = new Piece[8][8];
+	public static ArrayList<Piece> black = new ArrayList<Piece>();
+	public static ArrayList<Piece> white = new ArrayList<Piece>();
+	public static boolean white_checkmated = false;
+	public static boolean black_checkmated = false;
+
+	public static int numInput(String s)
+	{
+		int n = -1;
+		
+		try
+		{
+			System.out.print("Input " + s + ": ");
+			n = sc.nextInt();
+			return n;
+		}
+		catch (Exception e)
+		{
+			sc.nextLine();
+			System.out.println(s + " is not formatted correctly.");
+			return numInput(s);
+		}
+	}
+	
+	public static void setup()
+	{
+		clearBoard();
+		
+		Piece white_pawn_1 = new Piece(Type.Pawn, 6, 0);
+		Piece white_pawn_2 = new Piece(Type.Pawn, 6, 1);
+		Piece white_pawn_3 = new Piece(Type.Pawn, 6, 2);
+		Piece white_pawn_4 = new Piece(Type.Pawn, 6, 3);
+		Piece white_pawn_5 = new Piece(Type.Pawn, 6, 4);
+		Piece white_pawn_6 = new Piece(Type.Pawn, 6, 5);
+		Piece white_pawn_7 = new Piece(Type.Pawn, 6, 6);
+		Piece white_pawn_8 = new Piece(Type.Pawn, 6, 7);
+		
+		Piece white_rook_1 = new Piece(Type.Rook, 7, 0);
+		Piece white_knight_1 = new Piece(Type.Knight, 7, 1);
+		Piece white_bishop_1 = new Piece(Type.Bishop, 7, 2);
+		Piece white_queen = new Piece(Type.Queen, 7, 3);
+		Piece white_king = new Piece(Type.King, 7, 4);
+		Piece white_bishop_2 = new Piece(Type.Bishop, 7, 5);
+		Piece white_knight_2 = new Piece(Type.Knight, 7, 6);
+		Piece white_rook_2 = new Piece(Type.Rook, 7, 7);
+		
+		white.add(white_pawn_1);
+		white.add(white_pawn_2);
+		white.add(white_pawn_3);
+		white.add(white_pawn_4);
+		white.add(white_pawn_5);
+		white.add(white_pawn_6);
+		white.add(white_pawn_7);
+		white.add(white_pawn_8);
+		
+		white.add(white_rook_1);
+		white.add(white_knight_1);
+		white.add(white_bishop_1);
+		white.add(white_king);
+		white.add(white_queen);
+		white.add(white_bishop_2);
+		white.add(white_knight_2);
+		white.add(white_rook_2);
+		
+		Piece black_pawn_1 = new Piece(Type.Pawn, 1, 0);
+		Piece black_pawn_2 = new Piece(Type.Pawn, 1, 1);
+		Piece black_pawn_3 = new Piece(Type.Pawn, 1, 2);
+		Piece black_pawn_4 = new Piece(Type.Pawn, 1, 3);
+		Piece black_pawn_5 = new Piece(Type.Pawn, 1, 4);
+		Piece black_pawn_6 = new Piece(Type.Pawn, 1, 5);
+		Piece black_pawn_7 = new Piece(Type.Pawn, 1, 6);
+		Piece black_pawn_8 = new Piece(Type.Pawn, 1, 7);
+		
+		Piece black_rook_1 = new Piece(Type.Rook, 0, 0);
+		Piece black_knight_1 = new Piece(Type.Knight, 0, 1);
+		Piece black_bishop_1 = new Piece(Type.Bishop, 0, 2);
+		Piece black_king = new Piece(Type.King, 0, 3);
+		Piece black_queen = new Piece(Type.Queen, 0, 4);
+		Piece black_bishop_2 = new Piece(Type.Bishop, 0, 5);
+		Piece black_knight_2 = new Piece(Type.Knight, 0, 6);
+		Piece black_rook_2 = new Piece(Type.Rook, 0, 7);
+		
+		black.add(black_pawn_1);
+		black.add(black_pawn_2);
+		black.add(black_pawn_3);
+		black.add(black_pawn_4);
+		black.add(black_pawn_5);
+		black.add(black_pawn_6);
+		black.add(black_pawn_7);
+		black.add(black_pawn_8);
+		
+		black.add(black_rook_1);
+		black.add(black_knight_1);
+		black.add(black_bishop_1);
+		black.add(black_king);
+		black.add(black_queen);
+		black.add(black_bishop_2);
+		black.add(black_knight_2);
+		black.add(black_rook_2);
+		
+		for (Piece k : black)
+		{
+			board[k.getRow()][k.getColumn()] = k;
+			k.setColor(Color.Black);
+		}
+		for (Piece k : white)
+		{
+			board[k.getRow()][k.getColumn()] = k;
+			k.setColor(Color.White);
+		}
+	}	
+	public static void clearBoard()
+	{
+		for (int r = 0; r < 8; r++)
+		{
+			for (int c = 0; c < 8; c++)
+			{
+				board[r][c] = null;
+			}
+		}
+		white.clear();
+		black.clear();
+	}
+	public static void printBoard()
+	{
+		System.out.println();
+		for (int r = 0; r < 8; r++)
+		{
+			for (int c = 0; c < 8; c++)
+			{
+				if (board[r][c] != null)
+					System.out.print(board[r][c].icon() + " ");
+				else 
+					System.out.print("-- ");
+			}
+			System.out.println();
+		}
+		System.out.println();
+	}
+	public static void keepScore()
+	{
+		white.clear();
+		black.clear();
+		
+		for (int r = 0; r < 8; r++)
+		{
+			for (int c = 0; c < 8; c++)
+			{
+				if (board[r][c] != null)
+				{
+					if (board[r][c].getColor() == Color.White)
+					{
+						white.add(board[r][c]);
+					}
+					else if (board[r][c].getColor() == Color.Black)
+					{
+						black.add(board[r][c]);
+					}
+				}
+			}
+		}
+		
+		white_checkmated = true;
+		for (Piece k : white)
+		{
+			if (k.getType() == Type.King)
+			{
+				white_checkmated = false;
+				break;
+			}
+		}
+		
+		black_checkmated = true;
+		for (Piece k : black)
+		{
+			if (k.getType() == Type.King)
+			{
+				black_checkmated = false;
+				break;
+			}
+		}
+	}
+	public static void checkWhite()
+	{
+		int findRow = -1;
+		int findCol = -1;
+		
+		for (Piece k : black)
+		{
+			if (k.getType() == Type.King)
+			{
+				findRow = k.getRow();
+				findCol = k.getColumn();
+				break;
+			}
+		}
+		for (Piece k : white)
+		{
+			try
+			{
+				k.checkMoves(board, black, white);
+				if (k.isValidMove(findRow, findCol))
+				{
+					System.out.println("\nCheck!");
+					break;
+				}
+			}
+			catch (IndexOutOfBoundsException e)
+			{
+				
+			}
+		}
+	}
+	public static void checkBlack()
+	{
+		int findRow = -1;
+		int findCol = -1;
+		
+		for (Piece k : white)
+		{
+			if (k.getType() == Type.King)
+			{
+				findRow = k.getRow();
+				findCol = k.getColumn();
+				break;
+			}
+		}
+		for (Piece k : black)
+		{
+			try
+			{
+				k.checkMoves(board, black, white);
+				if (k.isValidMove(findRow, findCol))
+				{
+					System.out.println("\nCheck!");
+					break;
+				}
+			}
+			catch (IndexOutOfBoundsException e)
+			{
+				
+			}
+		}
+	}
+	
+	public static boolean move(int row, int col)
+	{
+		try
+		{
+			Piece current = board[row][col];
+			current.checkMoves(board, black, white);
+			
+			int newRow = numInput("Row to Move Piece To");
+			int newCol = numInput("Column to Move Piece To");
+			
+			if (current.isValidMove(newRow, newCol))
+			{
+				current.setRow(newRow);
+				current.setColumn(newCol);
+				
+				board[newRow][newCol] = current;
+				board[row][col] = null;
+				
+				current.startMoving();
+				keepScore();
+				return true;
+			}
+			else 
+			{
+				return false;
+			}
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			return false;
+		}
+	}
+	public static void whiteTurn()
+	{
+		boolean canMove = false;
+		int findRow = numInput("Row of Piece Being Moved");
+		int findCol = numInput("Column of Piece Being Moved");
+		
+		for (Piece k : white)
+		{
+			canMove = false;
+			if (k.getRow() == findRow && k.getColumn() == findCol)
+			{
+				canMove = move(findRow, findCol);
+				checkWhite();
+				break;
+			}
+		}
+		
+		if (!canMove)
+		{
+			System.out.println("Invalid move. Retry\n");
+			whiteTurn();
+		}
+	}
+	public static void blackTurn()
+	{
+		boolean canMove = false;
+		int findRow = numInput("Row of Piece Being Moved");
+		int findCol = numInput("Column of Piece Being Moved");
+		
+		for (Piece k : black)
+		{
+			canMove = false;
+			if (k.getRow() == findRow && k.getColumn() == findCol)
+			{
+				canMove = move(findRow, findCol);
+				checkBlack();
+				break;
+			}
+		}
+		
+		if (!canMove)
+		{
+			System.out.println("Invalid move. Retry\n");
+			blackTurn();
+		}
+	}
+	
+	public static void main(String[] args)
+	{
+		setup();
+		
+		do 
+		{	
+			printBoard();
+			System.out.println("White Turn!");
+			whiteTurn();
+			
+			printBoard();
+			System.out.println("Black Turn!");
+			blackTurn();
+			
+		} while (!black_checkmated && !white_checkmated);
+		sc.close();
+		
+		String phrase = (white_checkmated) ? "Black" : "White";
+		System.out.println("Checkmate!");
+		System.out.println(phrase + " Wins!");
+		System.exit(0);
+	}
+}
